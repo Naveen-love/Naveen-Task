@@ -1,0 +1,54 @@
+ name: Install and configure dependencies on Ubuntu server
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update the apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Apache2
+      apt:
+        name: apache2
+        state: present
+
+    - name: Install MySQL Server
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: Install required packages for Docker
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+- name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull the Docker image
+      docker_image:
+        name: your_docker_image_name
+        source: pull
+
+    - name: Create a directory for ephemeral storage
+      file:
+        path: /mnt/ephemeral_storage
+        state: directory
+        mode: '0755'
+
+    - name: Start a Docker container with ephemeral storage attached
+      docker_container:
+        name: my_container
+        image: your_docker_image_name
+        state: started
+ volumes:
+          - /mnt/ephemeral_storage:/data
+
+
